@@ -21,6 +21,9 @@ void usb_platform_setup(void) {
     attachInterruptVector(IRQ_USB1, &usb_device_isr);
     NVIC_ENABLE_IRQ(IRQ_USB1);
     printf("  USB1 ISR Attached\r\n");
+    
+    // Disable auto-clear for clock gate on USBPHY1
+    USBPHY1_CTRL_CLR = USBPHY_CTRL_ENAUTOCLR_CLKGATE;
 
     // Borrowed from: https://github.com/PaulStoffregen/USBHost_t36/blob/master/ehci.cpp#L167
     printf("  USB2 PLL Starting\r\n");
@@ -78,4 +81,12 @@ void usb_platform_setup(void) {
     NVIC_ENABLE_IRQ(IRQ_USB2);
 
     printf("  USB2 ISR Attached\r\n");
+}
+
+void usb_set_connected(bool connected) {
+    if (connected) {
+        USB1_USBCMD |= USB_USBCMD_RS; // RUN
+    } else {
+        USB1_USBCMD &= ~USB_USBCMD_RS; // STOP
+    }
 }

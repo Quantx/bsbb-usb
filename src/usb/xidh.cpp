@@ -28,8 +28,8 @@ typedef struct {
     TUH_EPBUF_DEF(ep_out, XIDH_EP_BUFFER_BUFSIZE);
 } xidh_epbuf_t;
 
-xidh_interface_t _xidh_itf_table[XIDH_DRIVER_MAX];
-xidh_epbuf_t _xidh_epbuf_table[XIDH_DRIVER_MAX]; // Must be declared separately due to alignment requirements
+static xidh_interface_t _xidh_itf_table[XIDH_DRIVER_MAX];
+static xidh_epbuf_t _xidh_epbuf_table[XIDH_DRIVER_MAX]; // Must be declared separately due to alignment requirements
 
 static xidh_interface_t * get_xid_itf(uint8_t daddr) {
     for (uint8_t i = 0; i < XIDH_DRIVER_MAX; i++) {
@@ -128,7 +128,7 @@ bool xidh_send_report(uint8_t daddr, void * report, uint8_t report_len) {
 }
 
 static void xidh_send_report_cb(uint8_t daddr, xfer_result_t result, void * ep_out, uint8_t xferred_bytes) {
-    printf("[%u] XID Transfer callback OUT\r\n", daddr);
+    //printf("[%u] XID Transfer callback OUT\r\n", daddr);
 }
 
 bool xidh_receive_report(uint8_t daddr) {
@@ -154,7 +154,7 @@ bool xidh_receive_report(uint8_t daddr) {
 }
 
 static void xidh_receive_report_cb(uint8_t daddr, xfer_result_t result, void * ep_in, uint8_t xferred_bytes) {
-    printf("[%u] XID Transfer callback IN\r\n", daddr);
+    //printf("[%u] XID Transfer callback IN\r\n", daddr);
 
     xidh_interface_t * xid_itf = get_xid_itf(daddr);
     if (!xid_itf) {
@@ -229,17 +229,17 @@ static void xidh_parse_descriptor(tuh_xfer_t * xfer) {
     xidh_receive_report(daddr);
 }
 
-static inline void reset_xid_itf(void) {
+static inline void xidh_reset(void) {
     memset(_xidh_itf_table, 0, sizeof(_xidh_itf_table));
 }
 
 bool xidh_init(void) {
-    reset_xid_itf();
+    xidh_reset();
     return true;
 }
 
 bool xidh_deinit(void) {
-    reset_xid_itf();
+    xidh_reset();
     return true;
 }
 
